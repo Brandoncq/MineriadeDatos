@@ -74,10 +74,6 @@ model/**/*.pyc
 model/.pytest_cache/
 model/.mypy_cache/
 
-# Modelos grandes
-model/*.pkl
-model/models/
-model/outputs/
 
 # Archivos de desarrollo
 model/.ipynb_checkpoints/
