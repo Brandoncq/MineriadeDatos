@@ -1,14 +1,22 @@
-from fastapi import FastAPI
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 import pickle
 
-app = FastAPI()
+app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
-with open("modelo_churn.pkl", "rb") as f:
+# Cargar modelo
+with open("modelo_ingreso.pkl", "rb") as f:
     model = pickle.load(f)
 
 
-@app.post("/predict")
-def predict(features: dict):
+@app.route("/predict", methods=["POST"])
+def predict():
+    features = request.json  # recibe JSON del cuerpo
     X = [list(features.values())]
     pred = model.predict(X)[0]
-    return {"prediction": int(pred)}
+    return jsonify({"prediction": int(pred)})
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8000)
