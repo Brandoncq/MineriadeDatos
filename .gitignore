@@ -1,0 +1,91 @@
+##############################
+# GLOBAL
+##############################
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+logs/
+debug.log
+
+# Entornos
+.env
+.env.*
+.env.local
+.env.development
+.env.production
+.env.test
+
+
+##############################
+# FRONTEND (React + Vite)
+##############################
+
+# Dependencias
+frontend/node_modules/
+
+# Builds
+frontend/dist/
+frontend/build/
+
+# Vite caches
+frontend/.vite/
+frontend/.cache/
+
+# Archivos temporales
+frontend/tmp/
+frontend/.temp/
+
+
+##############################
+# BACKEND (Node.js)
+##############################
+
+backend/node_modules/
+backend/logs/
+backend/*.log
+backend/temp/
+backend/.cache/
+
+# Compilaciones (si usas TS)
+backend/dist/
+backend/build/
+backend/tsconfig.tsbuildinfo
+
+
+##############################
+# MODEL (Python + FastAPI)
+##############################
+
+# Entorno virtual
+model/venv/
+model/.venv/
+
+# Cache de Python
+model/__pycache__/
+model/**/*.pyc
+model/.pytest_cache/
+model/.mypy_cache/
+
+# Modelos grandes
+model/*.pkl
+model/models/
+model/outputs/
+
+# Archivos de desarrollo
+model/.ipynb_checkpoints/
+model/*.ipynb
+
+
+##############################
+# DOCKER
+##############################
+
+# Volúmenes persi
