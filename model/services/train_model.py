@@ -1,30 +1,70 @@
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.preprocessing import LabelEncoder
+# train_model.py
 import pandas as pd
-import joblib
-from services.github_fetch import fetch_data
+import pickle
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report
+from github_fetch import fetch_data
+import os
 
-# 1. Cargar datos (ya puede estar en data/)
-df = fetch_data()
+BASE_DIR = os.path.dirname(os.path.dirname(
+    os.path.abspath(__file__)))  # /model
+MODEL_DIR = os.path.join(BASE_DIR, "saved_models")
+MODEL_PATH = os.path.join(MODEL_DIR, "modelo_ingreso.pkl")
 
-# 2. Convertir columnas de texto a números
-df_encoded = df.copy()
-encoders = {}
+TARGET = "INGRESO_BIN"
 
-for col in df_encoded.columns:
-    if df_encoded[col].dtype == "object":
-        le = LabelEncoder()
-        df_encoded[col] = le.fit_transform(df_encoded[col])
-        encoders[col] = le
+print("📄 Cargando dataset limpio desde GitHub...")
+df = fetch_data()  # <--- AQUÍ SE USA TU FUNCIÓN
 
-# 3. Separar variables
-X = df_encoded.drop("INGRESO", axis=1)
-y = df_encoded["INGRESO"]
+# ================================
+# 1. Preparación de datos
+# ================================
+COLUMNAS_A_ELIMINAR = [
+    TARGET,
+    "CALIF_FINAL",
+    "FACULTAD_COD"
+]
 
-# 4. Entrenar modelo
-model = RandomForestClassifier()
-model.fit(X, y)
+X = df.drop(columns=[c for c in COLUMNAS_A_ELIMINAR if c in df.columns])
+y = df[TARGET]
 
-# 5. Guardar modelo en saved_models/
-joblib.dump({"model": model, "encoders": encoders},
-            "saved_models/modelo_ingreso.pkl")
+X = X.fillna(X.mean())
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y
+)
+
+print("🔧 Variables usadas para entrenamiento:", X_train.shape[1])
+
+# ================================
+# 2. Entrenamiento del modelo
+# ================================
+print("🤖 Entrenando modelo Random Forest...")
+model = RandomForestClassifier(
+    n_estimators=100,
+    max_depth=5,
+    random_state=42,
+    class_weight="balanced"
+)
+model.fit(X_train, y_train)
+
+# ================================
+# 3. Evaluación
+# ================================
+preds = model.predict(X_test)
+
+print("\n📊 Accuracy:", accuracy_score(y_test, preds))
+print("\n📌 Classification Report:")
+print(classification_report(y_test, preds))
+
+# ================================
+# 4. Guardar modelo
+# ================================
+with open(MODEL_PATH, "wb") as f:
+    pickle.dump({
+        "model": model,
+        "columns": list(X.columns)
+    }, f)
+
+print(f"\n✅ Modelo guardado como: {MODEL_PATH}")

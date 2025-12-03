@@ -1,10 +1,8 @@
 import pandas as pd
 
-CSV_URL = "https://github.com/chavez-dev/proyecto_mineria_datos/blob/main/dataset.csv"
-DATA_PATH = "data/dataset.csv"
+CSV_URL = "https://raw.githubusercontent.com/chavez-dev/proyecto_mineria_datos/main/datos_cepre_preparados_final.csv"
 
 
 def fetch_data():
-    df = pd.read_csv(CSV_URL, sep=None, engine="python")
-    df.to_csv(DATA_PATH, index=False)
+    df = pd.read_csv(CSV_URL)
     return df
