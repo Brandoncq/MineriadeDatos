@@ -1,17 +1,14 @@
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import LabelEncoder
 import pandas as pd
-import pickle
+import joblib
+from services.github_fetch import fetch_data
 
-CSV_URL = "https://github.com/chavez-dev/proyecto_mineria_datos/blob/main/dataset.csv"
+# 1. Cargar datos (ya puede estar en data/)
+df = fetch_data()
 
-# 1. Cargar datos
-df = pd.read_csv(CSV_URL, sep=None, engine="python")
-
-# 2. Convertir TODAS las columnas de texto a números
+# 2. Convertir columnas de texto a números
 df_encoded = df.copy()
-encoder = LabelEncoder()
-
 encoders = {}
 
 for col in df_encoded.columns:
@@ -28,6 +25,6 @@ y = df_encoded["INGRESO"]
 model = RandomForestClassifier()
 model.fit(X, y)
 
-# 5. Guardar modelo
-with open("modelo_ingreso.pkl", "wb") as f:
-    pickle.dump({"model": model, "encoders": encoders}, f)
+# 5. Guardar modelo en saved_models/
+joblib.dump({"model": model, "encoders": encoders},
+            "saved_models/modelo_ingreso.pkl")
