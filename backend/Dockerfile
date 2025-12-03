@@ -1,3 +1,4 @@
+# backend/Dockerfile
 FROM node:18-alpine
 
 WORKDIR /app
@@ -9,7 +10,7 @@ COPY . .
 
 ENV PORT=3000
 ENV MODEL_URL=http://model:5000
-ENV FRONTEND_URL=http://frontend:5173
+ENV FRONTEND_URL=http://frontend:80  
 
 EXPOSE 3000
 

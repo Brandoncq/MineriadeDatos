@@ -4,21 +4,13 @@ services:
       context: ./frontend
       args:
         VITE_BACKEND_URL: "http://backend:3000"
-    ports:
-      - "5173:5173"
-    environment:
-      VITE_BACKEND_URL: "http://backend:3000"
-    depends_on:
-      - backend
     restart: unless-stopped
 
   backend:
     build: ./backend
-    ports:
-      - "3000:3000"
     environment:
-      FRONTEND_URL: "http://frontend:5173"
       MODEL_URL: "http://model:5000"
+      FRONTEND_URL: "http://frontend:80"
       PORT: 3000
       NODE_ENV: "production"
     depends_on:
@@ -27,8 +19,6 @@ services:
 
   model:
     build: ./model
-    ports:
-      - "5000:5000"
     environment:
       BACKEND_URL: "http://backend:3000"
     restart: unless-stopped
