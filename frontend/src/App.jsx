@@ -2,23 +2,33 @@ import { useState } from "react";
 
 function App() {
   const [formData, setFormData] = useState({
-    edad: "",
-    sexo: "",
-    tiempo_egreso: "",
-    numero_intentos: "",
-    puntaje_minedu: "",
-    tipo_colegio: "",
-    es_migrante: false,
+    EDAD: "",
+    N_INTENTOS: "",
+    TIEMPO_DESDE_EGRESO: "",
+    CALIF_PROMEDIO_HIST: "",
+    HA_INGRESADO_ANTES: 0,
+    PUNTAJE_MINEDU: "",
+    ES_MIGRANTE: 0,
+    NIVEL_DIFICULTAD: "",
+    COLEGIO_TIPO_GESTION: "",
+    EGRESADO_RECIENTE_BIN: "",
+    SEXO_COD: "",
+    ANIO_POSTULA: 2025,
+    ASISTENCIA: "",
+    PARCIAL_1: "",
+    PARCIAL_2: "",
   });
 
   const [prediction, setPrediction] = useState(null);
+  const [probability, setProbability] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: type === "checkbox" ? (checked ? 1 : 0) : value,
     }));
   };
 
@@ -26,17 +36,36 @@ function App() {
     e.preventDefault();
     setLoading(true);
 
+    // Convertir valores numéricos
+    const bodyToSend = {
+      ...formData,
+      EDAD: Number(formData.EDAD),
+      N_INTENTOS: Number(formData.N_INTENTOS),
+      TIEMPO_DESDE_EGRESO: Number(formData.TIEMPO_DESDE_EGRESO),
+      CALIF_PROMEDIO_HIST: Number(formData.CALIF_PROMEDIO_HIST),
+      PUNTAJE_MINEDU: Number(formData.PUNTAJE_MINEDU),
+      NIVEL_DIFICULTAD: Number(formData.NIVEL_DIFICULTAD),
+      COLEGIO_TIPO_GESTION: Number(formData.COLEGIO_TIPO_GESTION),
+      EGRESADO_RECIENTE_BIN: Number(formData.EGRESADO_RECIENTE_BIN),
+      SEXO_COD: Number(formData.SEXO_COD),
+      ASISTENCIA: Number(formData.ASISTENCIA),
+      PARCIAL_1: Number(formData.PARCIAL_1),
+      PARCIAL_2: Number(formData.PARCIAL_2),
+    };
+
     try {
       const res = await fetch(
         `${import.meta.env.VITE_BACKEND_URL}/api/predict`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(bodyToSend),
         }
       );
+
       const json = await res.json();
       setPrediction(json.prediction);
+      setProbability(json.probability);
     } catch (error) {
       console.error("Error:", error);
     } finally {
@@ -50,42 +79,99 @@ function App() {
         <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">
           🎓 Predicción de Ingreso a la Universidad
         </h1>
+
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* EDAD */}
           <div>
-            <label className="block text-gray-700">Edad</label>
+            <label className="block">Edad</label>
             <input
               type="number"
-              name="edad"
-              value={formData.edad}
+              name="EDAD"
+              value={formData.EDAD}
               onChange={handleChange}
               className="w-full p-2 border rounded"
               required
             />
           </div>
 
+          {/* SEXO */}
           <div>
-            <label className="block text-gray-700">Sexo</label>
+            <label className="block">Sexo</label>
             <select
-              name="sexo"
-              value={formData.sexo}
+              name="SEXO_COD"
+              value={formData.SEXO_COD}
               onChange={handleChange}
               className="w-full p-2 border rounded"
               required
             >
               <option value="">Selecciona</option>
-              <option value="1">Masculino</option>
-              <option value="2">Femenino</option>
+              <option value="0">Masculino</option>
+              <option value="1">Femenino</option>
             </select>
           </div>
 
+          {/* N INTENTOS */}
           <div>
-            <label className="block text-gray-700">
-              Tiempo desde egreso (años)
-            </label>
+            <label className="block">Número de intentos</label>
             <input
               type="number"
-              name="tiempo_egreso"
-              value={formData.tiempo_egreso}
+              name="N_INTENTOS"
+              value={formData.N_INTENTOS}
+              onChange={handleChange}
+              className="w-full p-2 border rounded"
+              required
+            />
+          </div>
+
+          {/* TIEMPO DESDE EGRESO */}
+          <div>
+            <label className="block">Tiempo desde egreso (años)</label>
+            <input
+              type="number"
+              name="TIEMPO_DESDE_EGRESO"
+              value={formData.TIEMPO_DESDE_EGRESO}
+              onChange={handleChange}
+              className="w-full p-2 border rounded"
+              required
+            />
+          </div>
+
+          {/* PUNTAJE MINEDU */}
+          <div>
+            <label className="block">Puntaje MINEDU</label>
+            <input
+              type="number"
+              step="0.1"
+              name="PUNTAJE_MINEDU"
+              value={formData.PUNTAJE_MINEDU}
+              onChange={handleChange}
+              className="w-full p-2 border rounded"
+              required
+            />
+          </div>
+
+          {/* ASISTENCIA */}
+          <div>
+            <label className="block">Asistencia (0 - 1)</label>
+            <input
+              type="number"
+              step="0.01"
+              name="ASISTENCIA"
+              value={formData.ASISTENCIA}
+              onChange={handleChange}
+              className="w-full p-2 border rounded"
+              required
+            />
+          </div>
+
+          {/* PARCIALES */}
+          <div>
+            <label className="block">Parcial 1</label>
+            <input
+              type="number"
+              step="0.1"
+              name="PARCIAL_1"
+              value={formData.PARCIAL_1}
               onChange={handleChange}
               className="w-full p-2 border rounded"
               required
@@ -93,61 +179,100 @@ function App() {
           </div>
 
           <div>
-            <label className="block text-gray-700">Número de intentos</label>
+            <label className="block">Parcial 2</label>
             <input
               type="number"
-              name="numero_intentos"
-              value={formData.numero_intentos}
+              step="0.1"
+              name="PARCIAL_2"
+              value={formData.PARCIAL_2}
               onChange={handleChange}
               className="w-full p-2 border rounded"
               required
             />
           </div>
 
+          {/* TIPO DE COLEGIO */}
           <div>
-            <label className="block text-gray-700">Tipo de colegio</label>
+            <label className="block">Tipo de colegio</label>
             <select
-              name="tipo_colegio"
-              value={formData.tipo_colegio}
+              name="COLEGIO_TIPO_GESTION"
+              value={formData.COLEGIO_TIPO_GESTION}
               onChange={handleChange}
               className="w-full p-2 border rounded"
               required
             >
               <option value="">Selecciona</option>
-              <option value="publico">Público</option>
-              <option value="privado">Privado</option>
+              <option value="0">Público</option>
+              <option value="1">Privado</option>
             </select>
           </div>
 
+          {/* MIGRANTE */}
           <div className="flex items-center space-x-2">
             <input
               type="checkbox"
-              name="es_migrante"
-              checked={formData.es_migrante}
+              name="ES_MIGRANTE"
+              checked={formData.ES_MIGRANTE === 1}
               onChange={handleChange}
             />
             <label>Es migrante</label>
           </div>
 
+          {/* EGRESADO RECIENTE */}
+          <div>
+            <label className="block">Egresado reciente</label>
+            <select
+              name="EGRESADO_RECIENTE_BIN"
+              value={formData.EGRESADO_RECIENTE_BIN}
+              onChange={handleChange}
+              className="w-full p-2 border rounded"
+              required
+            >
+              <option value="">Selecciona</option>
+              <option value="1">Sí</option>
+              <option value="0">No</option>
+            </select>
+          </div>
+
+          {/* NIVEL DIFICULTAD */}
+          <div>
+            <label className="block">Nivel de dificultad</label>
+            <input
+              type="number"
+              name="NIVEL_DIFICULTAD"
+              value={formData.NIVEL_DIFICULTAD}
+              onChange={handleChange}
+              className="w-full p-2 border rounded"
+              required
+            />
+          </div>
+
           <button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition mt-4"
+            className="w-full bg-blue-600 text-white py-3 rounded-xl mt-4"
           >
             {loading ? "Cargando..." : "Predecir"}
           </button>
         </form>
+
         {prediction !== null && (
-          <div className="text-center my-6">
-            <p className="text-lg text-gray-700">
-              Resultado:
+          <div className="mt-6 text-center">
+            <p className="text-lg">
+              Resultado:{" "}
               <span
-                className={`font-bold ml-2 ${
+                className={`font-bold ${
                   prediction === 1 ? "text-green-600" : "text-red-600"
                 }`}
               >
                 {prediction === 1 ? "INGRESA" : "NO INGRESA"}
               </span>
             </p>
+
+            {probability !== null && (
+              <p className="mt-2 text-gray-700">
+                Probabilidad: <b>{probability}%</b>
+              </p>
+            )}
           </div>
         )}
       </div>

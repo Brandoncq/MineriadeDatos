@@ -1,31 +1,32 @@
 from fastapi import APIRouter, HTTPException
 from models.schemas import PredictInput
 from utils.model_utils import load_model
+import numpy as np
+import pandas as pd
 
 router = APIRouter()
 
 # Cargar modelo al inicio
-model, encoders = load_model()
+model, columns = load_model()
 
 
 @router.post("/predict")
 def predict(input_data: PredictInput):
     input_dict = input_data.dict()
-    processed = {}
 
-    for col, value in input_dict.items():
-        if col in encoders:
-            try:
-                processed[col] = encoders[col].transform([value])[0]
-            except ValueError:
-                raise HTTPException(
-                    status_code=400,
-                    detail=f"Valor desconocido '{value}' en columna '{col}'"
-                )
-        else:
-            processed[col] = value
+    for col in columns:
+        if col not in input_dict:
+            raise HTTPException(
+                status_code=400, detail=f"Falta la columna: {col}")
 
-    X = [list(processed.values())]
+    # Convertir a DataFrame con columnas correctas
+    X = pd.DataFrame([input_dict], columns=columns)
+
+    # Predicción
     pred = model.predict(X)[0]
+    proba = model.predict_proba(X)[0][1]
 
-    return {"prediction": int(pred)}
+    return {
+        "prediction": int(pred),
+        "probability": round(proba * 100, 2)
+    }

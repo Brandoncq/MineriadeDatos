@@ -1,8 +1,11 @@
-import joblib
+import pickle
 
 
 def load_model(path="saved_models/modelo_ingreso.pkl"):
-    data = joblib.load(path)
+    with open(path, "rb") as f:
+        data = pickle.load(f)
+
     model = data["model"]
-    encoders = data["encoders"]
-    return model, encoders
+    columns = data["columns"]
+
+    return model, columns

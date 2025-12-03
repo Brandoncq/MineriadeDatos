@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routes.predict import predict
+from routes.predict import router
 from dotenv import load_dotenv
 import os
 
@@ -17,5 +17,4 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Incluir routers
-app.include_router(predict.router)
+app.include_router(router)
