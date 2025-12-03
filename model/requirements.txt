@@ -1,7 +1,7 @@
-flask
-flask-cors
-pandas
-numpy
+fastapi
+uvicorn
+python-dotenv
 scikit-learn
 joblib
-python-dotenv
+numpy
+pandas

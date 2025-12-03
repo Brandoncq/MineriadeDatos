@@ -3,7 +3,7 @@ from sklearn.preprocessing import LabelEncoder
 import pandas as pd
 import pickle
 
-CSV_URL = "https://raw.githubusercontent.com/chavez-dev/proyecto_mineria_datos/main/Datos_abiertos_cepre_2016_2025-I.csv"
+CSV_URL = "https://github.com/chavez-dev/proyecto_mineria_datos/blob/main/dataset.csv"
 
 # 1. Cargar datos
 df = pd.read_csv(CSV_URL, sep=None, engine="python")
