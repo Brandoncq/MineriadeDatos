@@ -14,7 +14,7 @@ services:
       - "3000:3000"
     environment:
       MODEL_URL: "http://64.225.126.210:5000"
-      FRONTEND_URL: "http://64.225.126.210:5173"
+      FRONTEND_URL: "http://64.225.126.210:9090"
       PORT: 3000
       NODE_ENV: "production"
     depends_on:
