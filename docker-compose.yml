@@ -3,14 +3,16 @@ services:
     build:
       context: ./frontend
       args:
-        VITE_BACKEND_URL: "http://backend:3000"
+        VITE_BACKEND_URL: "http://backend.predict.work.gd"
+    ports:
+    - "5173:5173"
     restart: unless-stopped
 
   backend:
     build: ./backend
     environment:
-      MODEL_URL: "http://model:5000"
-      FRONTEND_URL: "http://frontend:80"
+      MODEL_URL: "model.predict.work.gd"
+      FRONTEND_URL: "http://predict.work.gd"
       PORT: 3000
       NODE_ENV: "production"
     depends_on:
@@ -20,7 +22,7 @@ services:
   model:
     build: ./model
     environment:
-      BACKEND_URL: "http://backend:3000"
+      BACKEND_URL: "http://backend.predict.work.gd"
     restart: unless-stopped
 
   nginx:
