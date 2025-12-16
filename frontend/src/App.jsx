@@ -94,7 +94,12 @@ function App() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setPrediction(null); setProbability(null); setErrorMsg(null);
+        
+        // **********************************************
+        // * MODIFICACIÓN CLAVE: MANTENER RESULTADOS *
+        // **********************************************
+        // Solo limpiamos el mensaje de error, NO la predicción anterior
+        setErrorMsg(null); 
 
         const validationError = validateData(formData);
         if (validationError) { setErrorMsg(validationError); return; }
@@ -127,12 +132,15 @@ function App() {
             });
 
             if (!res.ok) throw new Error("Error en servidor");
-            const json = await res.json();
+            const json = await await res.json();
             setPrediction(json.prediction);
             setProbability(json.probability);
         } catch (error) {
             console.error("Error:", error);
             setErrorMsg("No se pudo conectar con el servicio de IA.");
+            // Solo limpiamos la predicción si hay un error de conexión/servidor.
+            setPrediction(null); 
+            setProbability(null);
         } finally {
             setLoading(false);
         }
